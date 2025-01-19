@@ -27,6 +27,10 @@ export default function DateTimeModal({ isOpen, onClose, onSave }) {
   const daysOfWeek = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
   const times = [
+    "5:00PM",
+    "5:15PM",
+    "5:30PM",
+    "5:45PM",
     "6:00PM",
     "6:15PM",
     "6:30PM",
@@ -43,6 +47,10 @@ export default function DateTimeModal({ isOpen, onClose, onSave }) {
     "9:30PM",
     "9:45PM",
     "10:00PM",
+    "10:15PM",
+    "10:30PM",
+    "10:45PM",
+    "11:00PM",
   ];
 
   const getDaysInMonth = (year, month) => {
