@@ -13,9 +13,9 @@ import CustomFieldModal from "./CustomFieldModal";
 import AddSpeakerModal from "./AddSpeakerModal";
 import AddScheduleModal from "./AddScheduleModal";
 import DateTimeModal from "./DateTimeModal";
+import { FaTrash } from "react-icons/fa";
 
 export default function EventCreator() {
-  const [image, setImage] = useState(null);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
@@ -24,6 +24,33 @@ export default function EventCreator() {
   const [isAddScheduleModalOpen, setIsAddScheduleModalOpen] = useState(false);
   const [isDateTimeModalOpen, setIsDateTimeModalOpen] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState("");
+  const [mainImage, setMainImage] = useState(null);
+  const [mediaItems, setMediaItems] = useState([]);
+
+  // Handle main image selection
+  const handleMainImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setMainImage(imageUrl);
+    }
+  };
+
+  // Handle additional media uploads (max 3 items)
+  const handleMediaUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && mediaItems.length < 3) {
+      const mediaUrl = URL.createObjectURL(file);
+      setMediaItems([...mediaItems, mediaUrl]);
+    }
+  };
+
+  // Remove a media item
+  const removeMediaItem = (index) => {
+    const updatedMediaItems = [...mediaItems];
+    updatedMediaItems.splice(index, 1);
+    setMediaItems(updatedMediaItems);
+  };
 
   const options = [
     "Add Speakers",
@@ -50,55 +77,105 @@ export default function EventCreator() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Image and Video/Photos */}
             <div className="md:space-y-[50px] space-y-[35px]">
-              {/* Image Upload */}
-              <div
-                className="relative max-w-[400px] w-full md:h-[400px] h-[300px] rounded-2xl overflow-hidden bg-[#00000033] backdrop-blur-[4px] cursor-pointer"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(180deg, #00000033 0%, #658FFF 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2))",
-                }}
-              >
-                {image ? (
-                  <img
-                    src={image || "/placeholder.svg"}
-                    alt="Event"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute right-4 bottom-[25px] flex items-center justify-center">
-                    <div className="xl:w-[86px] lg:w-[70px] md:w-[60px] w-[55px] xl:min-w-[86px] lg:min-w-[70px] md:min-w-[60px] min-w-[55px] xl:h-[86px] lg:h-[70px] md:h-[60px] h-[55px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
-                      <Image
-                        src="/assets/add-photo.png"
-                        alt="pin-icon"
-                        width={48}
-                        height={48}
-                        className="xl:h-[48px] lg:h-[40px] h-[30px] xl:w-[48px] lg:w-[40px] w-[30px]"
-                      />
+              {/* Main Image Upload */}
+              <label htmlFor="main-image-upload">
+                <div
+                  className="relative max-w-[400px] w-full md:h-[400px] h-[300px] rounded-2xl overflow-hidden bg-[#00000033] backdrop-blur-[4px] cursor-pointer"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(180deg, #00000033 0%, #658FFF 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2))",
+                  }}
+                >
+                  {mainImage ? (
+                    <img
+                      src={mainImage}
+                      alt="Event"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute right-4 bottom-[25px] flex items-center justify-center">
+                      <div className="xl:w-[86px] lg:w-[70px] md:w-[60px] w-[55px] xl:min-w-[86px] lg:min-w-[70px] md:min-w-[60px] min-w-[55px] xl:h-[86px] lg:h-[70px] md:h-[60px] h-[55px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
+                        <Image
+                          src="/assets/add-photo.png"
+                          alt="pin-icon"
+                          width={48}
+                          height={48}
+                          className="xl:h-[48px] lg:h-[40px] h-[30px] xl:w-[48px] lg:w-[40px] w-[30px]"
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </label>
+              <input
+                type="file"
+                id="main-image-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={handleMainImageUpload}
+              />
 
               {/* Video & Photos */}
               <div className="md:space-y-[30px] space-y-[15px]">
                 <h2 className="lg:text-[24px] md:text-[20px] text-[18px] font-[800] text-[#000000BF] tracking-[10%]">
                   VIDEO & PHOTOS
                 </h2>
-                <div className="w-[159px] md:h-[264px] h-[200px] cursor-pointer hover:bg-gray-50 border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center">
-                  <div className="flex flex-col items-center md:gap-[24px] gap-4">
-                    <div className="md:w-[68.5px] w-[50px] md:min-w-[68.5px] min-w-[50px] md:h-[68.5px] h-[50px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
-                      <Image
-                        src="/assets/upload.png"
-                        alt="pin-icon"
-                        width={68.5}
-                        height={68.5}
-                      />
+                {/* Additional Media Upload (Up to 3) */}
+                <div className="flex gap-4">
+                  {mediaItems.map((media, index) => (
+                    <div
+                      key={index}
+                      className="relative w-[159px] md:h-[264px] h-[200px] border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center"
+                    >
+                      {media.endsWith(".mp4") ? (
+                        <video
+                          src={media}
+                          className="w-full h-full rounded-[31px] object-cover"
+                          controls
+                        />
+                      ) : (
+                        <img
+                          src={media}
+                          alt="Uploaded media"
+                          className="w-full h-full rounded-[31px] object-cover"
+                        />
+                      )}
+                      <button
+                        className="absolute top-4 right-2 text-white rounded-full"
+                        onClick={() => removeMediaItem(index)}
+                      >
+                        <FaTrash className="text-red-500 text-[20px]" />
+                      </button>
                     </div>
-                    <span className="text-[#909090] lg:text-[20px] md:text-[18px] text-base">
-                      Upload
-                    </span>
-                  </div>
+                  ))}
+
+                  {mediaItems.length < 3 && (
+                    <label htmlFor="media-upload">
+                      <div className="w-[159px] md:h-[264px] h-[200px] cursor-pointer hover:bg-gray-50 border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center">
+                        <div className="flex flex-col items-center md:gap-[24px] gap-4">
+                          <div className="md:w-[68.5px] w-[50px] md:min-w-[68.5px] min-w-[50px] md:h-[68.5px] h-[50px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
+                            <Image
+                              src="/assets/upload.png"
+                              alt="upload-icon"
+                              width={68.5}
+                              height={68.5}
+                            />
+                          </div>
+                          <span className="text-[#909090] lg:text-[20px] md:text-[18px] text-base">
+                            Upload
+                          </span>
+                        </div>
+                      </div>
+                    </label>
+                  )}
                 </div>
+                <input
+                  type="file"
+                  id="media-upload"
+                  accept="image/*,video/*"
+                  className="hidden"
+                  onChange={handleMediaUpload}
+                />
               </div>
             </div>
 
