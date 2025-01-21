@@ -38,11 +38,13 @@ export default function EventCreator() {
 
   // Handle additional media uploads (max 3 items)
   const handleMediaUpload = (event) => {
-    const file = event.target.files[0];
-    if (file && mediaItems.length < 3) {
-      const mediaUrl = URL.createObjectURL(file);
-      setMediaItems([...mediaItems, mediaUrl]);
-    }
+    const files = Array.from(event.target.files);
+    const newMedia = files.map((file) => ({
+      url: URL.createObjectURL(file), // Generate a temporary blob URL
+      type: file.type.startsWith("video/") ? "video" : "image",
+    }));
+
+    setMediaItems((prev) => [...prev, ...newMedia].slice(0, 3)); // Limit to 3 items
   };
 
   // Remove a media item
@@ -78,42 +80,44 @@ export default function EventCreator() {
             {/* Left Column - Image and Video/Photos */}
             <div className="md:space-y-[50px] space-y-[35px]">
               {/* Main Image Upload */}
-              <label htmlFor="main-image-upload">
-                <div
-                  className="relative max-w-[400px] w-full md:h-[400px] h-[300px] rounded-2xl overflow-hidden bg-[#00000033] backdrop-blur-[4px] cursor-pointer"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(180deg, #00000033 0%, #658FFF 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2))",
-                  }}
-                >
-                  {mainImage ? (
-                    <img
-                      src={mainImage}
-                      alt="Event"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="absolute right-4 bottom-[25px] flex items-center justify-center">
-                      <div className="xl:w-[86px] lg:w-[70px] md:w-[60px] w-[55px] xl:min-w-[86px] lg:min-w-[70px] md:min-w-[60px] min-w-[55px] xl:h-[86px] lg:h-[70px] md:h-[60px] h-[55px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
-                        <Image
-                          src="/assets/add-photo.png"
-                          alt="pin-icon"
-                          width={48}
-                          height={48}
-                          className="xl:h-[48px] lg:h-[40px] h-[30px] xl:w-[48px] lg:w-[40px] w-[30px]"
-                        />
+              <div className="max-w-[400px] w-full md:h-[400px] h-[300px] rounded-2xl">
+                <label htmlFor="main-image-upload">
+                  <div
+                    className="relative max-w-[400px] w-full md:h-[400px] h-[300px] rounded-2xl overflow-hidden bg-[#00000033] backdrop-blur-[4px] cursor-pointer"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(180deg, #00000033 0%, #658FFF 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2))",
+                    }}
+                  >
+                    {mainImage ? (
+                      <img
+                        src={mainImage}
+                        alt="Event"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute right-4 bottom-[25px] flex items-center justify-center">
+                        <div className="xl:w-[86px] lg:w-[70px] md:w-[60px] w-[55px] xl:min-w-[86px] lg:min-w-[70px] md:min-w-[60px] min-w-[55px] xl:h-[86px] lg:h-[70px] md:h-[60px] h-[55px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
+                          <Image
+                            src="/assets/add-photo.png"
+                            alt="pin-icon"
+                            width={48}
+                            height={48}
+                            className="xl:h-[48px] lg:h-[40px] h-[30px] xl:w-[48px] lg:w-[40px] w-[30px]"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </label>
-              <input
-                type="file"
-                id="main-image-upload"
-                accept="image/*"
-                className="hidden"
-                onChange={handleMainImageUpload}
-              />
+                    )}
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  id="main-image-upload"
+                  accept="image/*,video/*"
+                  className="hidden"
+                  onChange={handleMainImageUpload}
+                />
+              </div>
 
               {/* Video & Photos */}
               <div className="md:space-y-[30px] space-y-[15px]">
@@ -121,30 +125,31 @@ export default function EventCreator() {
                   VIDEO & PHOTOS
                 </h2>
                 {/* Additional Media Upload (Up to 3) */}
-                <div className="flex gap-4">
+                <div className="flex gap-4 rounded-[31px]">
                   {mediaItems.map((media, index) => (
                     <div
                       key={index}
                       className="relative w-[159px] md:h-[264px] h-[200px] border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center"
                     >
-                      {media.endsWith(".mp4") ? (
+                      {media.type === "video" ? (
                         <video
-                          src={media}
+                          src={media.url}
                           className="w-full h-full rounded-[31px] object-cover"
                           controls
                         />
                       ) : (
                         <img
-                          src={media}
+                          src={media.url}
                           alt="Uploaded media"
                           className="w-full h-full rounded-[31px] object-cover"
                         />
                       )}
+                      {/* Remove Button */}
                       <button
-                        className="absolute top-4 right-2 text-white rounded-full"
+                        className="absolute top-4 right-2 text-white rounded-full hover:text-red-500 group"
                         onClick={() => removeMediaItem(index)}
                       >
-                        <FaTrash className="text-red-500 text-[20px]" />
+                        <FaTrash className="text-red-600 group-hover:text-red-500 text-[20px] transition" />
                       </button>
                     </div>
                   ))}
@@ -154,7 +159,7 @@ export default function EventCreator() {
                       <div className="w-[159px] md:h-[264px] h-[200px] cursor-pointer hover:bg-gray-50 border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center">
                         <div className="flex flex-col items-center md:gap-[24px] gap-4">
                           <div className="md:w-[68.5px] w-[50px] md:min-w-[68.5px] min-w-[50px] md:h-[68.5px] h-[50px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
-                            <Image
+                            <img
                               src="/assets/upload.png"
                               alt="upload-icon"
                               width={68.5}
@@ -168,14 +173,15 @@ export default function EventCreator() {
                       </div>
                     </label>
                   )}
+                  <input
+                    type="file"
+                    id="media-upload"
+                    accept="image/*,video/*"
+                    className="hidden"
+                    onChange={handleMediaUpload}
+                    multiple
+                  />
                 </div>
-                <input
-                  type="file"
-                  id="media-upload"
-                  accept="image/*,video/*"
-                  className="hidden"
-                  onChange={handleMediaUpload}
-                />
               </div>
             </div>
 

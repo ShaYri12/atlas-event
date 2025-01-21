@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { IoCloseSharp } from "react-icons/io5";
 import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 
 export default function AddSpeakerModal({ isOpen, onClose }) {
+  const [photo, setPhoto] = useState(null);
   const modalRef = useRef(null); // Reference for modal content
+
+  // Handle image upload
+  const handlePhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPhoto(imageUrl);
+    }
+  };
 
   // Close modal when clicking outside
   useEffect(() => {
@@ -45,11 +55,37 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
         </div>
         <div className="h-full overflow-y-auto w-full flex flex-col">
           <div className="max-w-[680px] mx-auto w-full">
-            <div className="cursor-pointer flex items-center justify-center w-[90px] h-[90px] rounded-full bg-[#F3F3F3] mx-auto lg:mb-[25px] md:mb-[20px] sm:mb-4 mb-[14px]">
-              <div className="flex gap-[5px] text-[#2D2C3C40] items-center justify-center bg-[#F8F7FA] rounded-full px-[5px]">
-                <MdOutlineAddPhotoAlternate color="#2D2C3C40" />
-                <span>Photo</span>
-              </div>
+            {/* Clickable Upload Box */}
+            <div className="w-[90px] h-[90px] rounded-full mx-auto">
+              <label htmlFor="small-photo-upload">
+                <div
+                  className={`cursor-pointer flex items-center justify-center w-[90px] h-[90px] rounded-full bg-[#F3F3F3] mx-auto lg:mb-[25px] md:mb-[20px] sm:mb-4 mb-[14px] overflow-hidden ${
+                    photo && "shadow-lg"
+                  }`}
+                >
+                  {photo ? (
+                    <img
+                      src={photo}
+                      alt="Uploaded"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex gap-[5px] text-[#2D2C3C40] items-center justify-center bg-[#F8F7FA] rounded-full px-[5px]">
+                      <MdOutlineAddPhotoAlternate color="#2D2C3C40" />
+                      <span>Photo</span>
+                    </div>
+                  )}
+                </div>
+              </label>
+
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                id="small-photo-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
             </div>
             {/* Ticket Type Selection */}
             <div className="lg:mb-[25px] md:mb-[20px] sm:mb-4 mb-[14px]">
