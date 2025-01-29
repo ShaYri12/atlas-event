@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoPlus } from "react-icons/go";
 import { IoCloseSharp } from "react-icons/io5";
 
 export default function AddFAQModal({ isOpen, onClose }) {
+  const [questions, setQuestions] = useState([""]); // Store the questions
   const modalRef = useRef(null); // Reference for modal content
 
   // Close modal when clicking outside
@@ -24,6 +25,18 @@ export default function AddFAQModal({ isOpen, onClose }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  // Add a new question input
+  const handleAddQuestion = () => {
+    setQuestions((prevQuestions) => [...prevQuestions, ""]);
+  };
+
+  // Update a specific question when the input value changes
+  const handleQuestionChange = (index, value) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index] = value;
+    setQuestions(updatedQuestions);
+  };
 
   if (!isOpen) return null;
 
@@ -52,18 +65,25 @@ export default function AddFAQModal({ isOpen, onClose }) {
             </div>
 
             {/* Form Fields */}
-            <div className="lg:mb-[40px] md:mb-[30px] mb-[20px]">
-              <input
-                type="text"
-                placeholder="Add a frequently asked question here..."
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base md:mb-4 mb-[10px]"
-              />
-            </div>
+            {questions.map((question, index) => (
+              <div key={index} className="lg:mb-[40px] md:mb-[30px] mb-[20px]">
+                <input
+                  type="text"
+                  placeholder="Add a frequently asked question here..."
+                  value={question}
+                  onChange={(e) => handleQuestionChange(index, e.target.value)}
+                  className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base md:mb-4 mb-[10px]"
+                />
+              </div>
+            ))}
 
             {/* Additional Options */}
             <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px]">
-              <button className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors">
-                <span className="">
+              <button
+                onClick={handleAddQuestion}
+                className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <span>
                   <GoPlus />
                 </span>{" "}
                 Add a Question
