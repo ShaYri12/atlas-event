@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { IoCloseSharp } from "react-icons/io5";
 
 export default function AddTagsModal({ isOpen, onClose }) {
   const modalRef = useRef(null); // Reference for modal content
+  const [tags, setTags] = useState([]); // State for tags
+  const [tagInput, setTagInput] = useState(""); // State for input field
 
   // Close modal when clicking outside
   useEffect(() => {
@@ -24,6 +26,19 @@ export default function AddTagsModal({ isOpen, onClose }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  // Handle adding a tag
+  const handleAddTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput(""); // Clear input after adding tag
+    }
+  };
+
+  // Handle removing a tag
+  const handleRemoveTag = (tag) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
 
   if (!isOpen) return null;
 
@@ -55,14 +70,41 @@ export default function AddTagsModal({ isOpen, onClose }) {
             <div className="lg:mb-[40px] md:mb-[30px] mb-[20px]">
               <input
                 type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") {
+                    handleAddTag();
+                  }
+                }}
                 placeholder="Begin typing, then press enter or add a comma to add a tag"
                 className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base md:mb-4 mb-[10px]"
               />
             </div>
 
+            {/* Tags Display */}
+            <div className="flex flex-wrap gap-2 mb-4 mt-[-20px]">
+              {tags.map((tag, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-[#F0F0F0] text-[#2D2C3C] px-3 py-2 rounded-full text-[16px] gap-1"
+                >
+                  {tag}
+                  <IoCloseSharp
+                    onClick={() => handleRemoveTag(tag)}
+                    className="cursor-pointer text-red-500"
+                    size={16}
+                  />
+                </div>
+              ))}
+            </div>
+
             {/* Additional Options */}
             <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px]">
-              <button className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors">
+              <button
+                onClick={handleAddTag}
+                className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
+              >
                 <span className="">
                   <GoPlus />
                 </span>{" "}

@@ -7,6 +7,8 @@ import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 
 export default function AddSpeakerModal({ isOpen, onClose }) {
   const [photo, setPhoto] = useState(null);
+  const [inputValue, setInputValue] = useState(""); // State for input value
+  const [bioLinks, setBioLinks] = useState([]); // State for storing added links
   const modalRef = useRef(null); // Reference for modal content
 
   // Handle image upload
@@ -18,11 +20,25 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
     }
   };
 
+  // Handle adding a bio link
+  const handleAddLink = () => {
+    if (inputValue.trim() !== "") {
+      setBioLinks([...bioLinks, inputValue]); // Add to list
+      setInputValue(""); // Clear input
+    }
+  };
+
+  // Handle removing a specific bio link
+  const handleRemoveLink = (index) => {
+    const newLinks = bioLinks.filter((_, i) => i !== index);
+    setBioLinks(newLinks); // Update the bioLinks state after removal
+  };
+
   // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose(); // Close modal when click outside
+        onClose(); // Close modal when clicking outside
       }
     };
 
@@ -30,7 +46,6 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    // Clean up the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -87,7 +102,8 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
                 onChange={handlePhotoUpload}
               />
             </div>
-            {/* Ticket Type Selection */}
+
+            {/* Speaker Name */}
             <div className="lg:mb-[25px] md:mb-[20px] sm:mb-4 mb-[14px]">
               <input
                 type="text"
@@ -96,25 +112,46 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
               />
             </div>
 
-            {/* Form Fields */}
-            <div className="lg:mb-[40px] md:mb-[30px] mb-[20px]">
+            {/* Add Bio Input */}
+            <div className="lg:mb-[20px] md:mb-[20px] mb-[10px]">
               <input
                 type="text"
                 placeholder="Add bio"
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base md:mb-4 mb-[10px]"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base"
               />
             </div>
 
-            {/* Additional Options */}
+            {/* Display added links with close icons */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {bioLinks.map((link, index) => (
+                <span
+                  key={index}
+                  className="flex items-center justify-between bg-[#F0F0F0] text-[#2D2C3C] px-4 py-2 rounded-full text-[16px]"
+                >
+                  {link}
+                  <IoCloseSharp
+                    onClick={() => handleRemoveLink(index)}
+                    className="cursor-pointer text-red-500"
+                    size={16}
+                  />
+                </span>
+              ))}
+            </div>
+
+            {/* Add Link Button */}
             <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px]">
-              <button className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors">
-                <span className="">
-                  <GoPlus />
-                </span>{" "}
+              <button
+                onClick={handleAddLink}
+                className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <GoPlus />
                 Add link
               </button>
             </div>
           </div>
+
           {/* Save Button */}
           <button className="w-full md:py-4 py-3 px-6 bg-blueish lg:text-[24px] md:text-[20px] text-[18px] font-[700] text-white rounded-[10px] hover:bg-blue-500 transition-colors max-w-[750px] mx-auto">
             Save

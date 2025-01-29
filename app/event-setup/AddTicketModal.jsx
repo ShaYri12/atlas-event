@@ -7,7 +7,8 @@ import { IoCloseSharp } from "react-icons/io5";
 
 export default function AddTicketsModal({ isOpen, onClose }) {
   const [selectedType, setSelectedType] = useState(null);
-  const modalRef = useRef(null); // Reference for modal content
+  const [isPromoCodeVisible, setPromoCodeVisible] = useState(false); // New state to toggle promo code input
+  const modalRef = useRef(null);
 
   // Close modal when clicking outside
   useEffect(() => {
@@ -28,6 +29,10 @@ export default function AddTicketsModal({ isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const handleAddPromoCode = () => {
+    setPromoCodeVisible(true); // Show the promo code input when clicked
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -146,13 +151,37 @@ export default function AddTicketsModal({ isOpen, onClose }) {
               {["Add Promo Code", "Add Start/End Date"].map((option) => (
                 <button
                   key={option}
+                  onClick={
+                    option === "Add Promo Code" ? handleAddPromoCode : null
+                  } // Add promo code toggle logic
                   className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
                 >
                   <span className="">{<GoPlus />}</span> {option}
                 </button>
               ))}
             </div>
+
+            {/* Promo Code Input */}
+            {isPromoCodeVisible && (
+              <div className="flex items-center gap-4 mb-3 mt-[-25px]">
+                <div className="lg:w-[66px] md:w-[60px] w-[50px] lg:min-w-[66px] md:min-w-[60px] min-w-[50px] lg:h-[66px] md:h-[60px] h-[50px] rounded-full flex justify-center items-center border border-[#ECECEC]">
+                  <Image
+                    src="/assets/distance.png"
+                    alt="pin-icon"
+                    width={29.04}
+                    height={43.56}
+                    className="lg:w-[29.04px] md:w-[25px] w-[20px]"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter Promo Code"
+                  className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] xl:text-[24px] lg:text-[20px] md:text-[18px] text-base"
+                />
+              </div>
+            )}
           </div>
+
           {/* Save Button */}
           <button className="w-full md:py-4 py-3 px-6 bg-blueish lg:text-[24px] md:text-[20px] text-[18px] font-[700] text-white rounded-[10px] hover:bg-blue-500 transition-colors max-w-[750px] mx-auto">
             Save
