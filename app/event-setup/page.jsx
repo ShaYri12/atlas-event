@@ -15,6 +15,7 @@ import AddScheduleModal from "./AddScheduleModal";
 import DateTimeModal from "./DateTimeModal";
 import VideoPhotosSection from "./VideoPhotosSection";
 import EventPrivacyDropdown from "./EventPrivacyDropdown";
+import Link from "next/link";
 
 export default function EventCreator() {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
@@ -231,9 +232,11 @@ export default function EventCreator() {
               </div>
 
               {/* Save Button */}
-              <button className="w-full md:py-4 py-3 px-6 bg-blueish text-white rounded-[10px] hover:bg-blue-500 transition-colors lg:text-[24px] md:text-[20px] text-[18px] font-[700] md:mt-[50px] mt-[30px]">
-                Save Draft
-              </button>
+              <Link href="/eventdetails">
+                <button className="w-full md:py-4 py-3 px-6 bg-blueish text-white rounded-[10px] hover:bg-blue-500 transition-colors lg:text-[24px] md:text-[20px] text-[18px] font-[700] md:mt-[50px] mt-[30px]">
+                  Save Draft
+                </button>
+              </Link>
             </div>
           </div>
         </div>

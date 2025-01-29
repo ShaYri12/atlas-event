@@ -29,14 +29,14 @@ const Header = () => {
           <Link
             href="/event-setup"
             className={`py-2 md:py-[10px] px-4 md:px-5 text-center text-base md:text-xl font-medium bg-transparent ${
-              isEventSetupPage ? "hidden md:flex" : "flex"
+              isEventSetupPage ? "hidden md:flex" : "sm:flex hidden"
             }`}
           >
             Create An Event
           </Link>
           <button
             className={`py-2 md:py-[10px] px-4 md:px-5 text-center text-base md:text-xl font-medium bg-[#658FFF] text-white rounded-[10px] transition-all duration-300 ease-out transform hover:opacity-90 ${
-              isEventSetupPage ? "hidden md:flex" : "flex"
+              isEventSetupPage ? "hidden md:flex" : "sm:flex hidden"
             }`}
           >
             Sign In
