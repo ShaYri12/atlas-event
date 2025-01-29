@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { IoCloseSharp } from "react-icons/io5";
 import { MdOutlineSchedule } from "react-icons/md";
 
 export default function AddScheduleModal({ isOpen, onClose }) {
   const modalRef = useRef(null); // Reference for modal content
+  const [inputs, setInputs] = useState([{ sessionInfo: "", time: "" }]); // State to track multiple input fields
 
   // Close modal when clicking outside
   useEffect(() => {
@@ -28,6 +28,16 @@ export default function AddScheduleModal({ isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const handleAddInput = () => {
+    setInputs([...inputs, { sessionInfo: "", time: "" }]); // Add a new set of input fields
+  };
+
+  const handleInputChange = (index, field, value) => {
+    const updatedInputs = [...inputs];
+    updatedInputs[index][field] = value;
+    setInputs(updatedInputs); // Update specific input field
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -53,31 +63,46 @@ export default function AddScheduleModal({ isOpen, onClose }) {
               </h2>
             </div>
 
-            {/* Form Fields */}
-            <div className=" flex gap-2 lg:mb-[50px] md:mb-[40px] mb-[25px]">
-              <input
-                type="text"
-                placeholder="Enter session information here"
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base"
-              />
-              <div className="flex items-center gap-4">
-                <div className="lg:w-[66px] md:w-[60px] w-[50px] lg:min-w-[66px] md:min-w-[60px] min-w-[50px] lg:h-[66px] md:h-[60px] h-[50px] rounded-full flex justify-center items-center border border-[#ECECEC]">
-                  <MdOutlineSchedule
-                    size={37}
-                    className="lg:w-[37px] md:w-[30px] w-[20px] text-blueish"
+            <div className="space-y-4">
+              {/* Form Fields */}
+              {inputs.map((input, index) => (
+                <div key={index} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={input.sessionInfo}
+                    onChange={(e) =>
+                      handleInputChange(index, "sessionInfo", e.target.value)
+                    }
+                    placeholder="Enter session information here"
+                    className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base"
                   />
+                  <div className="flex items-center gap-4">
+                    <div className="lg:w-[66px] md:w-[60px] w-[50px] lg:min-w-[66px] md:min-w-[60px] min-w-[50px] lg:h-[66px] md:h-[60px] h-[50px] rounded-full flex justify-center items-center border border-[#ECECEC]">
+                      <MdOutlineSchedule
+                        size={37}
+                        className="lg:w-[37px] md:w-[30px] w-[20px] text-blueish"
+                      />
+                    </div>
+                    <input
+                      type="time"
+                      value={input.time}
+                      onChange={(e) =>
+                        handleInputChange(index, "time", e.target.value)
+                      }
+                      placeholder="Time"
+                      className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] xl:text-[24px] lg:text-[20px] md:text-[18px] text-base"
+                    />
+                  </div>
                 </div>
-                <input
-                  type="time"
-                  placeholder="Description"
-                  className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] xl:text-[24px] lg:text-[20px] md:text-[18px] text-base"
-                />
-              </div>
+              ))}
             </div>
 
             {/* Additional Options */}
-            <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px]">
-              <button className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors">
+            <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px] lg:mt-[45px] md:mt-[35px] mt-[20px]">
+              <button
+                onClick={handleAddInput}
+                className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
+              >
                 <span className="">
                   <GoPlus />
                 </span>{" "}
