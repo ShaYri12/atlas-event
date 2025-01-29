@@ -8,7 +8,7 @@ import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 export default function AddSpeakerModal({ isOpen, onClose }) {
   const [photo, setPhoto] = useState(null);
   const [inputValue, setInputValue] = useState(""); // State for input value
-  const [bioLinks, setBioLinks] = useState([]); // State for storing added links
+  const [bioLinks, setBioLinks] = useState([""]); // Initialize with one input for the first link
   const modalRef = useRef(null); // Reference for modal content
 
   // Handle image upload
@@ -20,18 +20,16 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
     }
   };
 
-  // Handle adding a bio link
+  // Handle adding a bio link (new input field)
   const handleAddLink = () => {
-    if (inputValue.trim() !== "") {
-      setBioLinks([...bioLinks, inputValue]); // Add to list
-      setInputValue(""); // Clear input
-    }
+    setBioLinks([...bioLinks, ""]); // Add an empty input for a new link
   };
 
-  // Handle removing a specific bio link
-  const handleRemoveLink = (index) => {
-    const newLinks = bioLinks.filter((_, i) => i !== index);
-    setBioLinks(newLinks); // Update the bioLinks state after removal
+  // Handle changing a specific bio link value
+  const handleLinkChange = (index, value) => {
+    const newLinks = [...bioLinks];
+    newLinks[index] = value;
+    setBioLinks(newLinks); // Update the bioLinks state
   };
 
   // Close modal when clicking outside
@@ -112,42 +110,28 @@ export default function AddSpeakerModal({ isOpen, onClose }) {
               />
             </div>
 
-            {/* Add Bio Input */}
-            <div className="lg:mb-[20px] md:mb-[20px] mb-[10px]">
-              <input
-                type="text"
-                placeholder="Add bio"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base"
-              />
-            </div>
-
-            {/* Display added links with close icons */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            {/* Add Bio Input(s) */}
+            <div className="space-y-4">
               {bioLinks.map((link, index) => (
-                <span
+                <input
                   key={index}
-                  className="flex items-center justify-between bg-[#F0F0F0] text-[#2D2C3C] px-4 py-2 rounded-full text-[16px]"
-                >
-                  {link}
-                  <IoCloseSharp
-                    onClick={() => handleRemoveLink(index)}
-                    className="cursor-pointer text-red-500"
-                    size={16}
-                  />
-                </span>
+                  type="text"
+                  placeholder="Add bio"
+                  value={link}
+                  onChange={(e) => handleLinkChange(index, e.target.value)}
+                  className="w-full bg-transparent outline-none text-gray-700 placeholder-[#0F0F0F80] font-[600] lg:text-[22px] md:text-[18px] text-base"
+                />
               ))}
             </div>
 
             {/* Add Link Button */}
-            <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px]">
+            <div className="flex flex-wrap xl:gap-[28px] lg:gap-[24px] md:gap-[20px] sm:gap-4 gap-3 lg:mb-[40px] md:mb-[30px] mb-[20px] lg:mt-[20px] md:mt-[20px] mt-[10px]">
               <button
                 onClick={handleAddLink}
                 className="flex items-center justify-center gap-1 md:py-3 py-[9px] lg:px-[28px] md:px-[22px] sm:px-[18px] px-[12px] md:text-[18px] sm:text-base text-[15px] text-[#2D2C3C] bg-[#F8F7FA] rounded-full hover:bg-gray-100 transition-colors"
               >
                 <GoPlus />
-                Add link
+                Add more link
               </button>
             </div>
           </div>
