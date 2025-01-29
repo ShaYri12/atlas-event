@@ -13,7 +13,8 @@ import CustomFieldModal from "./CustomFieldModal";
 import AddSpeakerModal from "./AddSpeakerModal";
 import AddScheduleModal from "./AddScheduleModal";
 import DateTimeModal from "./DateTimeModal";
-import { FaTrash } from "react-icons/fa";
+import VideoPhotosSection from "./VideoPhotosSection";
+import EventPrivacyDropdown from "./EventPrivacyDropdown";
 
 export default function EventCreator() {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function EventCreator() {
   const [isDateTimeModalOpen, setIsDateTimeModalOpen] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [mainImage, setMainImage] = useState(null);
-  const [mediaItems, setMediaItems] = useState([]);
+  const [eventPrivacy, setEventPrivacy] = useState("Private");
 
   // Handle main image selection
   const handleMainImageUpload = (event) => {
@@ -34,24 +35,6 @@ export default function EventCreator() {
       const imageUrl = URL.createObjectURL(file);
       setMainImage(imageUrl);
     }
-  };
-
-  // Handle additional media uploads (max 3 items)
-  const handleMediaUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const newMedia = files.map((file) => ({
-      url: URL.createObjectURL(file), // Generate a temporary blob URL
-      type: file.type.startsWith("video/") ? "video" : "image",
-    }));
-
-    setMediaItems((prev) => [...prev, ...newMedia].slice(0, 3)); // Limit to 3 items
-  };
-
-  // Remove a media item
-  const removeMediaItem = (index) => {
-    const updatedMediaItems = [...mediaItems];
-    updatedMediaItems.splice(index, 1);
-    setMediaItems(updatedMediaItems);
   };
 
   const options = [
@@ -91,7 +74,7 @@ export default function EventCreator() {
                   >
                     {mainImage ? (
                       <img
-                        src={mainImage}
+                        src={mainImage || "/placeholder.svg"}
                         alt="Event"
                         className="w-full h-full object-cover"
                       />
@@ -120,89 +103,28 @@ export default function EventCreator() {
               </div>
 
               {/* Video & Photos */}
-              <div className="md:space-y-[30px] space-y-[15px]">
-                <h2 className="lg:text-[24px] md:text-[20px] text-[18px] font-[800] text-[#000000BF] tracking-[10%]">
-                  VIDEO & PHOTOS
-                </h2>
-                {/* Additional Media Upload (Up to 3) */}
-                <div className="flex gap-4 rounded-[31px]">
-                  {mediaItems.map((media, index) => (
-                    <div
-                      key={index}
-                      className="relative w-[159px] md:h-[264px] h-[200px] border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center"
-                    >
-                      {media.type === "video" ? (
-                        <video
-                          src={media.url}
-                          className="w-full h-full rounded-[31px] object-cover"
-                          controls
-                        />
-                      ) : (
-                        <img
-                          src={media.url}
-                          alt="Uploaded media"
-                          className="w-full h-full rounded-[31px] object-cover"
-                        />
-                      )}
-                      {/* Remove Button */}
-                      <button
-                        className="absolute top-4 right-2 text-white rounded-full hover:text-red-500 group"
-                        onClick={() => removeMediaItem(index)}
-                      >
-                        <FaTrash className="text-red-600 group-hover:text-red-500 text-[20px] transition" />
-                      </button>
-                    </div>
-                  ))}
-
-                  {mediaItems.length < 3 && (
-                    <label htmlFor="media-upload">
-                      <div className="w-[159px] md:h-[264px] h-[200px] cursor-pointer hover:bg-gray-50 border border-[#0000001F] bg-[#F6F6F6] rounded-[31px] flex flex-col items-center justify-center">
-                        <div className="flex flex-col items-center md:gap-[24px] gap-4">
-                          <div className="md:w-[68.5px] w-[50px] md:min-w-[68.5px] min-w-[50px] md:h-[68.5px] h-[50px] backdrop-blur-[50px] bg-[#FFFFFF40] rounded-full flex justify-center items-center">
-                            <img
-                              src="/assets/upload.png"
-                              alt="upload-icon"
-                              width={68.5}
-                              height={68.5}
-                            />
-                          </div>
-                          <span className="text-[#909090] lg:text-[20px] md:text-[18px] text-base">
-                            Upload
-                          </span>
-                        </div>
-                      </div>
-                    </label>
-                  )}
-                  <input
-                    type="file"
-                    id="media-upload"
-                    accept="image/*,video/*"
-                    className="hidden"
-                    onChange={handleMediaUpload}
-                    multiple
-                  />
-                </div>
+              <div className="md:block hidden">
+                <VideoPhotosSection />
               </div>
             </div>
 
-            {/* Right Column - Event Details and Buttons */}
             <div>
               <div className="md:space-y-[32px] space-y-[20px]">
                 {/* Event Details */}
                 <div className="space-y-[6px]">
                   <div className="flex flex-wrap sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-2 gap-4 w-full mb-[10px]">
-                    <div className="sm:order-1 order-2 flex-1 mx-0">
+                    <div className="flex-1 mx-0">
                       <input
                         type="text"
                         placeholder="Event Name"
                         className="w-full min-w-[200px] xl:text-[48px] lg:text-[40px] md:text-[30px] text-[20px] font-[800] bg-transparent border-none outline-none text-[#000000BF] placeholder-[#2D2C3C80]"
                       />
                     </div>
-                    <button className="flex sm:order-2 order-1 items-center justify-between lg:gap-4 gap-2 lg:px-[14px] px-[10px] lg:py-[21px] py-4 lg:text-[20px] md:text-[18px] text-base font-bold text-[#2D2C3C] rounded-[15px] border border-[#5A5A5A40] hover:bg-gray-50 transition-colors">
-                      <MdLockOutline />
-                      <span className="md:text-[18px]">Event Privacy</span>
-                      <GoChevronDown />
-                    </button>
+                    <div className="md:block hidden">
+                      <EventPrivacyDropdown
+                        onSelect={(option) => setEventPrivacy(option)}
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="lg:w-[66px] md:w-[60px] w-[50px] lg:min-w-[66px] md:min-w-[60px] min-w-[50px] lg:h-[66px] md:h-[60px] h-[50px] rounded-full flex justify-center items-center border border-[#ECECEC]">
@@ -301,6 +223,10 @@ export default function EventCreator() {
                       {option}
                     </button>
                   ))}
+                </div>
+                {/* Video & Photos */}
+                <div className="md:hidden block">
+                  <VideoPhotosSection />
                 </div>
               </div>
 
